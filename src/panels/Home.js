@@ -13,8 +13,12 @@ import Root from '@vkontakte/vkui/dist/components/Root/Root';
 import Select from '@vkontakte/vkui/dist/components/Select/Select';
 import Cal from '@vkontakte/icons/dist/28/calendar_outline';
 import Tar from '@vkontakte/icons/dist/28/hashtag_outline';
+import Cam from '@vkontakte/icons/dist/28/camera_outline';
+import Bell from '@vkontakte/icons/dist/28/message';
 import Arrow from '@vkontakte/icons/dist/28/arrow_up_outline';
-import { View, PanelHeaderBack, PanelHeaderButton, Input, Radio, Textarea, InfoRow, Progress } from '@vkontakte/vkui';
+import Card from '@vkontakte/vkui/dist/components/Card/Card';
+import Caption from '@vkontakte/vkui/dist/components/Typography/Caption/Caption';
+import { View, PanelHeaderBack, PanelHeaderButton, Input, Radio, Textarea, InfoRow, Progress, PanelHeaderSubmit, PanelHeaderContent } from '@vkontakte/vkui';
 import './Home.css';
 
 
@@ -68,23 +72,37 @@ const Home = () => {
 					<Div align="center">
 						<Group>
 							<Text weight="regular">Название сбора</Text>
-							<Input type="text"></Input>
+							<Input type="text" id="name"></Input>
 							<br/>
 							<Text weight="regular">Сумма</Text>
-							<Input type="text"></Input>
+							<Input type="text" id="sum"></Input>
 							<br/>
 							<Text weight="regular">Цель</Text>
-							<Input type="text"></Input>
+							<Input type="text" id="tar"></Input>
 							<br/>
 							<Text weight="regular">Описание</Text>
-							<Input type="text"></Input>
+							<Input type="text" id="def"></Input>
 							<br/>
 							<Text weight="regular">Куда получать деньги</Text>
-							<Select>
-								<option> Счет VK Pay 1234</option>
+							<Select id="bank">
+								<option val="Счет VK Pay 1234"> Счет VK Pay 1234</option>
 							</Select>
 							<br></br>
-							<Button size="xl" onClick={() => setView('target-dop')}>Далее</Button>
+							<Button size="xl" onClick={() => {
+								let name = document.getElementById('name');
+								let sum = document.getElementById('sum');
+								let tar = document.getElementById('tar');
+								let def = document.getElementById('def');
+								let bank = document.getElementById('bank');
+								setData(Object.assign(data, {
+									'name': name.value,
+									'sum': sum.value,
+									'tar': tar.value,
+									'def': def.value,
+									'bank': bank.value
+								}));
+								setView('target-dop');
+							}}>Далее</Button>
 						</Group>
 					</Div>
 				</Panel>
@@ -97,28 +115,44 @@ const Home = () => {
 					<Div align="center">
 						<Group>
 							<Text weight="regular">Название сбора</Text>
-							<Input type="text"></Input>
+							<Input type="text" id="name"></Input>
 							<br/>
 							<Text weight="regular">Сумма в месяц</Text>
-							<Input type="text"></Input>
+							<Input type="text" id="sum"></Input>
 							<br/>
 							<Text weight="regular">Цель</Text>
-							<Input type="text"></Input>
+							<Input type="text" id="tar"></Input>
 							<br/>
 							<Text weight="regular">Описание</Text>
-							<Input type="text"></Input>
+							<Input type="text" id="def"></Input>
 							<br/>
 							<Text weight="regular">Куда получать деньги</Text>
-							<Select>
-								<option> Счет VK Pay 1234</option>
+							<Select id="bank">
+								<option value="Счет VK Pay 1234"> Счет VK Pay 1234</option>
 							</Select>
 							<br></br>
 							<Text weight="regular">Автор</Text>
-							<Select>
-								<option>Вася Пупкин</option>
+							<Select id="auth">
+								<option value="Вася Пупкин">Вася Пупкин</option>
 							</Select>
 							<br></br>
-							<Button size="xl" onClick={() => setView('montly-dop')}>Далее</Button>
+							<Button size="xl" onClick={() => {
+								let name = document.getElementById("name");
+								let sum = document.getElementById("sum");
+								let def = document.getElementById("def");
+								let tar = document.getElementById("tar");
+								let bank = document.getElementById("bank");
+								let auth = document.getElementById("auth");
+								setData(Object.assign(data, {
+									'name': name.value,
+									'sum': sum.value,
+									'def': def.value,
+									'tar': tar.value,
+									'bank': bank.value,
+									'auth': auth.value
+								}));
+								setView('monthly-end');
+							}}>Далее</Button>
 						</Group>
 					</Div>
 				</Panel>
@@ -131,48 +165,132 @@ const Home = () => {
 					<Div align="center">
 						<Group>
 							<Text weight="regular">Автор</Text>
-							<Select>
-								<option>Вася Пупкин</option>
+							<Select id="auth">
+								<option value="Вася Пупкин">Вася Пупкин</option>
 							</Select>
 							<br></br>
 							<Text weight="regular">Сбор завершится</Text>
-							<Radio onClick={() => setDisable(true)}>Когда соберем сумму</Radio>
-							<Radio onClick={() => setDisable(false)} >В определенную дату</Radio>
+							<Radio checked={true} name="rad" onClick={() => setDisable(true)}>Когда соберем сумму</Radio>
+							<Radio name="rad" onClick={() => setDisable(false)} >В определенную дату</Radio>			
 							<br></br>
 							<Text weight="regular">Дата окончания</Text>
-							<Select>
-								<option>12 сентября</option>
-								<option>12 октября</option>
-								<option>12 ноября</option>
-								<option>12 декабря</option>
-								<option>1 января</option>
+							<Select id="date">
+								<option value="12 сентября">12 сентября</option>
+								<option value="12 октября">12 октября</option>
+								<option value="12 ноября">12 ноября</option>
+								<option value="12 декабря">12 декабря</option>
+								<option value="1 января">1 января</option>
 							</Select>
 							<br></br>
-							<Button size="xl" onClick={() => setView('target-end')}>Далее</Button>
+							<Button size="xl" onClick={() => {
+								let auth = document.getElementById('auth');
+								let rad = document.getElementsByName('rad')[0].checked === true;
+								let date = document.getElementById('date');
+								setData(Object.assign(data, {
+									'auth': auth.value,
+									'rad': rad,
+									'date': date.value
+								}));
+								window.data = data;
+								setView('target-end');
+							}}>Далее</Button>
 						</Group>
 					</Div>
 				</Panel>
 			</View>
 			<View id="target-end">
 				<Panel>					
-					<PanelHeader left={<PanelHeaderBack onClick={() => setView('target-dop')}
-						right={<PanelHeaderButton before={<Arrow></Arrow>} onClick={() => setView('createTarget')}></PanelHeaderButton>}
-					></PanelHeaderBack>}>
+					<PanelHeader left={<PanelHeaderBack onClick={() => setView('target-dop')}></PanelHeaderBack>}
+								right={<PanelHeaderSubmit onClick={() => {
+									let postdef = document.getElementById('postdef');
+									setData(Object.assign(data, {
+										'postdef': postdef.value
+									}));
+									window.data = data;
+									setView('createTarget');
+								}}></PanelHeaderSubmit>}>
 						Вася
 					</PanelHeader>
 					<Div align="center">
 						<Group>
-							<Textarea></Textarea>
+							<Textarea id="postdef"></Textarea>
 							<br></br>
 							<Text weight="regular">Добряши помогают котикам</Text>
-							<Group >
+							<Group>
 								<InfoRow header="Прогресс">
+									<Text weight="regular">Помогите первым!</Text>
+									<br></br>
 									<Progress value={0}></Progress>
+									<br></br>
+									<Button mode="outline" disabled={true}>Помочь</Button>
 								</InfoRow>
-								<Button mode="commerce">Помочь</Button>
 							</Group>
-							<br></br>
 						</Group>
+					</Div>
+				</Panel>
+			</View>
+			<View id="monthly-end">
+				<Panel>					
+					<PanelHeader left={<PanelHeaderBack onClick={() => setView('target-dop')}></PanelHeaderBack>}
+							right={<PanelHeaderSubmit onClick={() => { 
+								let postdef = document.getElementById('postdef');
+								setData(Object.assign(data, {
+									'postdef': postdef.value
+								}));
+								window.data = data;
+								setView('createTarget');
+							}}></PanelHeaderSubmit>}>
+						Вася
+					</PanelHeader>
+					<Div align="center">
+						<Group>
+							<Textarea id="postdef"></Textarea>
+							<br></br>
+							<Text weight="regular">Добряши помогают котикам</Text>
+							<Group>
+								<InfoRow header="Прогресс">
+									<Text weight="regular">Помогите первым!</Text>
+									<br></br>
+									<Progress value={0}></Progress>
+									<br></br>
+									<Button mode="outline" disabled={true}>Помочь</Button>
+								</InfoRow>
+							</Group>
+						</Group>
+					</Div>
+				</Panel>
+			</View>
+			<View id="createTarget">
+				<Panel>					
+					<PanelHeader left={<Cam></Cam>}
+							right={<Bell></Bell>}>
+						Новости
+					</PanelHeader>
+					<Div align="center">
+						<Card mode="outline" size="l">
+							<Div>
+								<Text>Вася Пупкин</Text>
+								<Caption level="3" weight="regular">час назад</Caption>
+							</Div>
+							<br></br>
+							<Div>
+								<Text>{data.postdef}</Text>
+							</Div>
+							<br></br>
+							<Card size="l">
+								<Div>
+									<Title>{data.name}</Title>
+									<br></br>
+									<Caption level="1">{data.auth} {data.date !== undefined ? data.date : "Помощь нужна каждый месяц"}</Caption>
+									<br></br>
+									<InfoRow>
+										<Progress style={{textAlign: 'left'}} value={75}></Progress>
+										<br></br>
+										<Button mode="outline"> Помочь</Button>
+									</InfoRow>
+								</Div>
+							</Card>
+						</Card>
 					</Div>
 				</Panel>
 			</View>
