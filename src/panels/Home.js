@@ -18,7 +18,7 @@ import Bell from '@vkontakte/icons/dist/28/message';
 import Arrow from '@vkontakte/icons/dist/28/arrow_up_outline';
 import Card from '@vkontakte/vkui/dist/components/Card/Card';
 import Caption from '@vkontakte/vkui/dist/components/Typography/Caption/Caption';
-import { View, PanelHeaderBack, PanelHeaderButton, Input, Radio, Textarea, InfoRow, Progress, PanelHeaderSubmit, PanelHeaderContent } from '@vkontakte/vkui';
+import { View, PanelHeaderBack, PanelHeaderButton, Input, Radio, Textarea, InfoRow, Progress, PanelHeaderSubmit, PanelHeaderContent, Header, Separator } from '@vkontakte/vkui';
 import './Home.css';
 
 
@@ -28,6 +28,8 @@ const Home = () => {
 	let [view, setView] = useState('donates');
 	let [disable, setDisable] = useState(true);
 	let [data, setData] = useState({});
+	let [checked, setChecked] = useState(true);
+	let date = "day";
 	return (
 		<Root activeView={view}>
 			<View id="donates">
@@ -72,19 +74,19 @@ const Home = () => {
 					<Div align="center">
 						<Group>
 							<Text weight="regular">Название сбора</Text>
-							<Input type="text" id="name"></Input>
+							<Input defaultValue={data.name} type="text" id="name" placeholder="Название сбора"></Input>
 							<br/>
 							<Text weight="regular">Сумма</Text>
-							<Input type="text" id="sum"></Input>
+							<Input defaultValue={data.sum} type="number" id="sum" placeholder="Сколько нужно собрать?"></Input>
 							<br/>
 							<Text weight="regular">Цель</Text>
-							<Input type="text" id="tar"></Input>
+							<Input defaultValue={data.tar} type="text" id="tar" placeholder="Например, лечение человека"></Input>
 							<br/>
 							<Text weight="regular">Описание</Text>
-							<Input type="text" id="def"></Input>
+							<Input defaultValue={data.def} type="text" id="def" placeholder="На что пойдут деньги и как они кому-то помогут?"></Input>
 							<br/>
 							<Text weight="regular">Куда получать деньги</Text>
-							<Select id="bank">
+							<Select id="bank" style={{textAlign: 'left'}}>
 								<option val="Счет VK Pay 1234"> Счет VK Pay 1234</option>
 							</Select>
 							<br></br>
@@ -115,24 +117,24 @@ const Home = () => {
 					<Div align="center">
 						<Group>
 							<Text weight="regular">Название сбора</Text>
-							<Input type="text" id="name"></Input>
+							<Input defaultValue={data.name} type="text" id="name" placeholder="Название сбора"></Input>
 							<br/>
 							<Text weight="regular">Сумма в месяц</Text>
-							<Input type="text" id="sum"></Input>
+							<Input defaultValue={data.sum} type="number" id="sum" placeholder="Сколько нужно в месяц?"></Input>
 							<br/>
 							<Text weight="regular">Цель</Text>
-							<Input type="text" id="tar"></Input>
+							<Input defaultValue={data.tar} type="text" id="tar" placeholder="Например, поддержка приюта"></Input>
 							<br/>
 							<Text weight="regular">Описание</Text>
-							<Input type="text" id="def"></Input>
+							<Input defaultValue={data.def} type="text" id="def" placeholder="На что пойдут деньги и как они кому-то  помогут?"></Input>
 							<br/>
 							<Text weight="regular">Куда получать деньги</Text>
-							<Select id="bank">
+							<Select id="bank" style={{textAlign: 'left'}}>
 								<option value="Счет VK Pay 1234"> Счет VK Pay 1234</option>
 							</Select>
 							<br></br>
 							<Text weight="regular">Автор</Text>
-							<Select id="auth">
+							<Select id="auth" style={{textAlign: 'left'}}>
 								<option value="Вася Пупкин">Вася Пупкин</option>
 							</Select>
 							<br></br>
@@ -149,7 +151,8 @@ const Home = () => {
 									'def': def.value,
 									'tar': tar.value,
 									'bank': bank.value,
-									'auth': auth.value
+									'auth': auth.value,
+									'when': 'monthly'
 								}));
 								setView('monthly-end');
 							}}>Далее</Button>
@@ -165,16 +168,24 @@ const Home = () => {
 					<Div align="center">
 						<Group>
 							<Text weight="regular">Автор</Text>
-							<Select id="auth">
+							<Select id="auth" style={{textAlign: 'left'}}>
 								<option value="Вася Пупкин">Вася Пупкин</option>
 							</Select>
 							<br></br>
 							<Text weight="regular">Сбор завершится</Text>
-							<Radio checked={true} name="rad" onClick={() => setDisable(true)}>Когда соберем сумму</Radio>
-							<Radio name="rad" onClick={() => setDisable(false)} >В определенную дату</Radio>			
+							<Radio checked={checked} name="rad" onClick={() => {
+								date = "target";
+								setChecked(true)
+								setDisable(true);
+							}}>Когда соберем сумму</Radio>
+							<Radio checked={!checked} name="rad" id="daily" onClick={() => {
+								date = "day";
+								setChecked(false)
+								setDisable(false);
+							}} >В определенную дату</Radio>			
 							<br></br>
 							<Text weight="regular">Дата окончания</Text>
-							<Select id="date">
+							<Select id="date" disabled={checked}>
 								<option value="12 сентября">12 сентября</option>
 								<option value="12 октября">12 октября</option>
 								<option value="12 ноября">12 ноября</option>
@@ -184,12 +195,14 @@ const Home = () => {
 							<br></br>
 							<Button size="xl" onClick={() => {
 								let auth = document.getElementById('auth');
-								let rad = document.getElementsByName('rad')[0].checked === true;
+								let rad = checked;
 								let date = document.getElementById('date');
+								let when = date;
 								setData(Object.assign(data, {
 									'auth': auth.value,
 									'rad': rad,
-									'date': date.value
+									'date': date.value,
+									'when': when
 								}));
 								window.data = data;
 								setView('target-end');
@@ -204,7 +217,11 @@ const Home = () => {
 								right={<PanelHeaderSubmit onClick={() => {
 									let postdef = document.getElementById('postdef');
 									setData(Object.assign(data, {
-										'postdef': postdef.value
+										'postdef': postdef.value === '' ? 'Дефолтный пост' : postdef.value,
+										'name': (data.name === '' ? 'Дефолтное название' : data.name),
+										'sum': (data.sum === 0 ? 1000 : 20),
+										'def': (data.def === '' ? 'Дефолтное описание' : data.def),
+										'tar': (data.tar === '' ? 'На что-нибудь' : data.tar)
 									}));
 									window.data = data;
 									setView('createTarget');
@@ -215,14 +232,14 @@ const Home = () => {
 						<Group>
 							<Textarea id="postdef"></Textarea>
 							<br></br>
-							<Text weight="regular">Добряши помогают котикам</Text>
+							<Text weight="semibold">{data.name}</Text>
 							<Group>
 								<InfoRow header="Прогресс">
-									<Text weight="regular">Помогите первым!</Text>
-									<br></br>
+									<Header weight="regular" level="4" aside={ <Button mode="outline" disabled={true}>Помочь</Button> }>
+										Помогите первым!
+										<br></br>
+									</Header>
 									<Progress value={0}></Progress>
-									<br></br>
-									<Button mode="outline" disabled={true}>Помочь</Button>
 								</InfoRow>
 							</Group>
 						</Group>
@@ -231,11 +248,15 @@ const Home = () => {
 			</View>
 			<View id="monthly-end">
 				<Panel>					
-					<PanelHeader left={<PanelHeaderBack onClick={() => setView('target-dop')}></PanelHeaderBack>}
+					<PanelHeader left={<PanelHeaderBack onClick={() => setView('monthly')}></PanelHeaderBack>}
 							right={<PanelHeaderSubmit onClick={() => { 
 								let postdef = document.getElementById('postdef');
 								setData(Object.assign(data, {
-									'postdef': postdef.value
+									'postdef': (postdef.value === '' ? 'Дефолтный пост' : postdef.value),
+									'name': (data.name === '' ? 'Дефолтное название' : data.name),
+									'sum': (data.sum === 0 ? 1000 : 20),
+									'def': (data.def === '' ? 'Дефолтное описание' : data.def),
+									'tar': (data.tar === '' ? 'На что-нибудь' : data.tar)
 								}));
 								window.data = data;
 								setView('createTarget');
@@ -267,29 +288,61 @@ const Home = () => {
 						Новости
 					</PanelHeader>
 					<Div align="center">
-						<Card mode="outline" size="l">
+						<Card mode="outline" size="l" onClick={() => {
+							setView('news-card');
+						}}>
 							<Div>
+							<Header left={<Avatar size={36}></Avatar>}>
 								<Text>Вася Пупкин</Text>
 								<Caption level="3" weight="regular">час назад</Caption>
+							</Header>
 							</Div>
 							<br></br>
 							<Div>
 								<Text>{data.postdef}</Text>
 							</Div>
 							<br></br>
-							<Card size="l">
+							<Card mode="outline" size="m" style={{margin: '5px'}}>
 								<Div>
-									<Title>{data.name}</Title>
-									<br></br>
-									<Caption level="1">{data.auth} {data.date !== undefined ? data.date : "Помощь нужна каждый месяц"}</Caption>
-									<br></br>
-									<InfoRow>
-										<Progress style={{textAlign: 'left'}} value={75}></Progress>
+									<Div>
+										<Title style={{marginLeft: '2px'}}>{data.name}</Title>
 										<br></br>
-										<Button mode="outline"> Помочь</Button>
-									</InfoRow>
+										<Caption level="1">{data.auth} {data.when === 'day' ? ('Закончится' + data.date) : (data.when === 'monthly' ? 'Помощь нужна каждй месяц' : '')}</Caption>
+									</Div>
+									<Separator></Separator>
+									<Div>
+										<InfoRow>
+											<Progress style={{textAlign: 'left'}} value={75}></Progress>
+											<br></br>
+											<Button mode="outline" onClick={() => {
+												setView('news-card');
+											}}> Помочь</Button>
+										</InfoRow>
+									</Div>
 								</Div>
 							</Card>
+						</Card>
+					</Div>
+				</Panel>
+			</View>
+			<View id="news-card">
+				<Panel>					
+					<PanelHeader left={<PanelHeaderBack onClick={() => setView('createTarget')}></PanelHeaderBack>}></PanelHeader>
+					<Div align="center">
+						<Card mode="outline" size="l">
+							<Div>
+								<Title weight="bold" level="1">{data.name}</Title>
+								<Text weight="regular" level="2">Автор {data.auth}</Text>
+								<Caption weight="regular" level="2">{data.when === 'day' ? ('Сбор закончится' + data.date) : (data.when === 'monthly' ? 'Помощь нужна каждй месяц' : '')}</Caption>
+							</Div>
+							<Separator></Separator>
+							<Div>
+								<Header aside={<Button mode="outline">Помочь</Button>} weight="regular" level="3">{data.when === 'day' ? ('Нужно собрать до ' + data.date) : (data.when === 'monthly' ? 'Нужно собрать в сентябре' : 'Нужно собрать')}</Header>
+								<Progress style={{textAlign: 'left'}} value={75}></Progress>
+							</Div>
+							<Div>
+								<Text>{data.postdef}</Text>
+							</Div>
 						</Card>
 					</Div>
 				</Panel>
